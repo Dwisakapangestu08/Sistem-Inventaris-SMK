@@ -541,13 +541,67 @@ class ApiAdminController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Penanggung Jawab Berhasil Ditambahkan',
-            ], 200);
+            ], 201);
         }
 
         return response()->json([
             'success' => false,
             'message' => 'Penanggung Jawab Gagal Ditambahkan',
         ], 400);
+    }
+
+    public function edit_penanggung_jawab($id)
+    {
+        $penanggung_jawab = Penanggung_Jawab::where('id', $id)->first();
+        if ($penanggung_jawab) {
+            return response()->json([
+                'success' => true,
+                'data' => $penanggung_jawab,
+                'guru' => User::where('role', '0')->get(),
+                'barang' => Barang::all(),
+            ], 200);
+        }
+        return response()->json([
+            'success' => false,
+            'message' => 'Penanggung Jawab Tidak Ditemukan',
+        ], 400);
+    }
+
+    public function update_penanggung_jawab(Request $request, $id)
+    {
+        $validation = Validator::make($request->all(), [
+            'guru' => 'required',
+            'barang' => 'required|unique:penanggung__jawabs,barang_id',
+        ], [
+            'guru.required' => 'Guru harus diisi',
+            'barang.required' => 'Barang harus diisi',
+            'barang.unique' => 'Barang sudah ada penanggung jawab',
+        ]);
+
+        if ($validation->fails()) {
+            return response()->json([
+                'success' => false,
+                'validation' => true,
+                'message' => $validation->errors(),
+            ], 400);
+        }
+
+        $penanggung_jawab = Penanggung_Jawab::where('id', $id)->update([
+            'user_id' => $request->guru,
+            'barang_id' => $request->barang
+        ]);
+
+        if ($penanggung_jawab) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Penanggung Jawab Berhasil Diupdate',
+            ], 200);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Penanggung Jawab Gagal Diupdate',
+        ]);
     }
 
     public function hapus_penanggung_jawab($id)

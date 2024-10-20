@@ -222,7 +222,33 @@ $(document).ready(function () {
                 Authorization: "Bearer " + get_cookie("token"),
             },
             success: function (res) {
-                console.log(res);
+                Swal.fire({
+                    icon: "success",
+                    title: "Berhasil",
+                    text: res.message,
+                    showConfirmButton: false,
+                    timer: 3000,
+                }).then(() => {
+                    $(".btn-update").prop("disabled", false);
+                    $("#editModal").modal("hide");
+                    load_table();
+                });
+            },
+            error: function (xhr) {
+                console.log(xhr);
+                $(".btn-update").prop("disabled", false);
+                if (xhr.responseJSON.validation) {
+                    validasi(xhr.responseJSON.message);
+                } else {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Gagal",
+                        text: xhr.responseJSON.message,
+                        showConfirmButton: false,
+                        timer: 3000,
+                    });
+                }
+                load_table();
             },
         });
     });

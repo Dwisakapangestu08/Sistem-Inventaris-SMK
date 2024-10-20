@@ -5,6 +5,8 @@
 @section('link-api')
     <meta name="link-api" link="{{ url('/api/v1/admin/daftar-penanggung-jawab') }}">
     <meta name="link-api-tambah" link="{{ url('/api/v1/admin/tambah-penanggung-jawab') }}">
+    <meta name="link-api-edit" link="{{ url('/api/v1/admin/edit-penanggung-jawab') }}">
+    <meta name="link-api-update" link="{{ url('/api/v1/admin/update-penanggung-jawab') }}">
     <meta name="link-api-hapus" link="{{ url('/api/v1/admin/hapus-penanggung-jawab') }}">
 @endsection
 
@@ -117,6 +119,23 @@
                         </div>
                     </form>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModal" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="editModal">Tambah Guru</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="update_penanggung_jawab">
+                    <div class="modal-body">
+                        @csrf
+
+                    </div>
+                </form>
             </div>
         </div>
     </div>
