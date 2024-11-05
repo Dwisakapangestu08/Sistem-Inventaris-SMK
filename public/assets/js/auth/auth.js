@@ -51,6 +51,8 @@ $(document).ready(function () {
                 console.log(jsonParse);
                 if (jsonParse.validation) {
                     validasi(jsonParse.message);
+                    $(".btn-login").html("Login");
+                    $(".btn-login").prop("disabled", false);
                 } else {
                     Swal.fire({
                         icon: "error",
@@ -58,6 +60,9 @@ $(document).ready(function () {
                         text: jsonParse.message,
                         showConfirmButton: false,
                         timer: 3000,
+                    }).then(() => {
+                        $(".btn-login").html("Login");
+                        $(".btn-login").prop("disabled", false);
                     });
                 }
             },
