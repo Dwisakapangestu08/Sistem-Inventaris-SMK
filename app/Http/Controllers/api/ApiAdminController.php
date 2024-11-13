@@ -23,12 +23,13 @@ class ApiAdminController extends Controller
         $draw   = $request->input('draw');
         $search = $request->input('search.value');
 
-        $member = User::where('role', '0')->orderBy('id', 'desc');
+        $member = User::where('status', '0')->orderBy('id', 'desc');
 
         if (!empty($search)) {
             $member = $member->where(function ($query) use ($search) {
                 $query->where('name', 'like', "%$search%");
                 $query->orWhere('email', 'like', "%$search%");
+                $query->orWhere('jabatan', 'like', "%$search%");
             });
         }
 

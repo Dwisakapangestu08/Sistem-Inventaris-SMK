@@ -12,7 +12,8 @@
 
 @section('content')
     @php
-        $gurus = \App\Models\User::where('role', 0)->get();
+        $gurus = \App\Models\User::where('role', '2')->where('status', '1')->get();
+        // dd($gurus);
         $barangs = \App\Models\Barang::all();
     @endphp
     <main id="main" class="main">

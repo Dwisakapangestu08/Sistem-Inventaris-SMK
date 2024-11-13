@@ -33,11 +33,19 @@ class ApiAuthController extends Controller
         $email = $request->email;
         $password = $request->password;
         $user = User::where('email', $email)->first();
+        $status = $user->status;
         if (!$user || !Hash::check($password, $user->password)) {
             return response()->json([
                 'status' => false,
                 'validation' => false,
                 'message' => 'Email Atau Password Tidak Valid',
+            ], 401);
+        }
+
+        if ($status == '0') {
+            return response()->json([
+                'status' => false,
+                'message' => 'Akun Anda Tidak Aktif, Silahkan Hubungi Admin',
             ], 401);
         }
 
@@ -51,7 +59,7 @@ class ApiAuthController extends Controller
         return response()->json([
             'status' => true,
             'redirect' => $redirect,
-            'message' => 'Login Berhasil, Selamat Datang Admin',
+            'message' => 'Login Berhasil, Selamat Datang',
             'remember_token' => $user->remember_token,
         ], 200);
     }
@@ -87,8 +95,9 @@ class ApiAuthController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'jabatan' => $request->jabatan,
-            'role' => '0',
+            'role' => '2',
             'remember_token' => Str::random(60),
+            'status' => '0',
         ];
 
         $user = User::create($data);

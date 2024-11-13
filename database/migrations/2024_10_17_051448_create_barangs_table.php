@@ -15,10 +15,15 @@ return new class extends Migration
             $table->id();
             $table->bigInteger('kategori_id');
             $table->string('name_barang');
-            $table->string('jumlah_barang');
-            $table->string('kondisi_barang');
-            $table->string('harga_barang');
+            $table->string("merk_barang")->nullable();
+            $table->string('ukuran_barang')->nullable();
+            $table->string('bahan_barang')->nullable();
+            $table->string('tahun_perolehan')->nullable();
+            $table->string('jumlah_barang')->nullable();
+            $table->string('harga_barang')->nullable();
+            $table->enum('keadaan_barang', ['Baik', 'Kurang Baik', 'Rusak Berat'])->nullable();
             $table->string('lokasi_barang')->nullable();
+            $table->text('keterangan')->nullable();
             $table->timestamps();
         });
     }
