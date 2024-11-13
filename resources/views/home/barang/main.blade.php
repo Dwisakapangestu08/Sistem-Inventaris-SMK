@@ -67,9 +67,14 @@
                                         <th scope="col">#</th>
                                         <th scope="col">Nama Barang</th>
                                         <th scope="col">Kategori</th>
+                                        <th scope="col">Merk Barang</th>
+                                        <th scope="col">Ukuran Barang</th>
+                                        <th scope="col">Bahan Barang</th>
+                                        <th scope="col">Tahun Perolehan</th>
                                         <th scope="col">Jumlah(Pack/Pcs)</th>
-                                        <th scope="col">Kondisi</th>
                                         <th scope="col">Harga</th>
+                                        <th scope="col">Kondisi</th>
+                                        <th scope="col">Keadaan Barang</th>
                                         <th scope="col">Total Harga</th>
                                         <th scope="col">Lokasi</th>
                                         <th scope="col">Aksi</th>
@@ -98,18 +103,42 @@
                         <div class="mb-3">
                             <label for="name" class="form-label">Name Barang</label>
                             <input type="text" name="name" class="form-control" id="name"
-                                placeholder="Contoh: Keyboard">
+                                placeholder="Contoh: Keyboard" required>
                             <div class="text-danger name_err"></div>
                         </div>
                         <div class="mb-3">
                             <label for="kategori" class="form-label">Kategori</label>
-                            <select name="kategori" id="kategori" class="form-select">
+                            <select name="kategori" id="kategori" class="form-select" required>
                                 <option value="">Pilih Kategori</option>
                                 @foreach ($kategori as $item)
                                     <option value="{{ $item->id }}">{{ $item->name_kategori }}</option>
                                 @endforeach
                             </select>
                             <div class="text-danger kategori_err"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="merk_barang" class="form-label">Merk Barang</label>
+                            <input type="text" name="merk_barang" class="form-control" id="merk_barang"
+                                placeholder="Contoh: Logitech">
+                            <div class="text-danger merk_barang_err"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="ukuran_barang" class="form-label">Ukuran Barang</label>
+                            <input type="text" name="ukuran_barang" class="form-control" id="ukuran_barang"
+                                placeholder="Contoh: 10cm">
+                            <div class="text-danger ukuran_barang_err"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="bahan_barang" class="form-label">Bahan Barang</label>
+                            <input type="text" name="bahan_barang" class="form-control" id="bahan_barang"
+                                placeholder="Contoh: Kayu">
+                            <div class="text-danger bahan_barang_err"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="tahun_perolehan" class="form-label">Tahun Perolehan</label>
+                            <input type="number" name="tahun_perolehan" class="form-control" id="tahun_perolehan"
+                                placeholder="Contoh: 2020">
+                            <div class="text-danger tahun_perolehan_err"></div>
                         </div>
                         <div class="mb-3">
                             <label for="jumlah" class="form-label">Jumlah Barang</label>
@@ -119,9 +148,22 @@
                         </div>
                         <div class="mb-3">
                             <label for="kondisi" class="form-label">Kondisi</label>
-                            <input type="text" name="kondisi" class="form-control" id="kondisi"
-                                placeholder="Contoh: Bekas">
+                            <select name="kondisi" class="form-select" id="kondisi">
+                                <option value="" disabled selected>===Pilih Kondisi Barang===</option>
+                                <option value="Baru">Baru</option>
+                                <option value="Bekas">Bekas</option>
+                            </select>
                             <div class="text-danger kondisi_err"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="keadaan_barang" class="form-label">Keadaan Barang</label>
+                            <select name="keadaan_barang" class="form-select" id="keadaan_barang">
+                                <option value="" disabled selected>===Pilih Keadaan Barang===</option>
+                                <option value="Baik">Baik</option>
+                                <option value="Kurang Baik">Kurang Baik</option>
+                                <option value="Rusak Berat">Rusak Berat</option>
+                            </select>
+                            <div class="text-danger keadaan_barang_err"></div>
                         </div>
                         <div class="mb-3">
                             <label for="harga" class="form-label">Harga</label>

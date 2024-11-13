@@ -39,14 +39,19 @@ $(document).ready(function () {
                 },
                 { data: "name_barang", name: "name_barang" },
                 { data: "name_kategori", name: "name_kategori" },
+                { data: "merk_barang", name: "merk_barang" },
+                { data: "ukuran_barang", name: "ukuran_barang" },
+                { data: "bahan_barang", name: "bahan_barang" },
+                { data: "tahun_perolehan", name: "tahun_perolehan" },
                 { data: "jumlah", name: "jumlah" },
-                { data: "kondisi", name: "kondisi" },
                 {
                     data: "harga",
                     render: function (data) {
                         return formatCurrency(data);
                     },
                 },
+                { data: "kondisi", name: "kondisi" },
+                { data: "keadaan_barang", name: "keadaan_barang" },
                 {
                     data: null,
                     render: function (data) {
@@ -87,7 +92,7 @@ $(document).ready(function () {
                 Authorization: "Bearer " + get_cookie("token"),
             },
             success: function (res) {
-                console.log(res);
+                // console.log(res);
                 Swal.fire({
                     icon: "success",
                     title: "Berhasil",
@@ -162,6 +167,36 @@ $(document).ready(function () {
                             </select>
                             <div class="text-danger kategori_err"></div>
                         </div>
+                         <div class="mb-3">
+                            <label for="merk_barang" class="form-label">Merk Barang</label>
+                            <input type="text" name="merk_barang" class="form-control" id="merk_barang"
+                                value="${res.data.merk_barang}">
+                            <div class="text-danger merk_barang_err"></div>
+                        </div>
+                         <div class="mb-3">
+                            <label for="ukuran_barang" class="form-label">Ukuran Barang</label>
+                            <input type="text" name="ukuran_barang" class="form-control" id="ukuran_barang"
+                                placeholder="Contoh: 10cm" value="${
+                                    res.data.ukuran_barang
+                                }">
+                            <div class="text-danger ukuran_barang_err"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="bahan_barang" class="form-label">Bahan Barang</label>
+                            <input type="text" name="bahan_barang" class="form-control" id="bahan_barang"
+                                placeholder="Contoh: Kayu" value="${
+                                    res.data.bahan_barang
+                                }">
+                            <div class="text-danger bahan_barang_err"></div>
+                        </div>
+                         <div class="mb-3">
+                            <label for="tahun_perolehan" class="form-label">Tahun Perolehan</label>
+                            <input type="number" name="tahun_perolehan" class="form-control" id="tahun_perolehan"
+                                placeholder="Contoh: 2020" value="${
+                                    res.data.tahun_perolehan
+                                }">
+                            <div class="text-danger tahun_perolehan_err"></div>
+                        </div>
                         <div class="mb-3">
                             <label for="jumlah" class="form-label">Jumlah Barang</label>
                             <input type="text" name="jumlah" class="form-control" id="jumlah"
@@ -170,13 +205,44 @@ $(document).ready(function () {
                                 }">
                             <div class="text-danger jumlah_err"></div>
                         </div>
-                        <div class="mb-3">
+                         <div class="mb-3">
                             <label for="kondisi" class="form-label">Kondisi</label>
-                            <input type="text" name="kondisi" class="form-control" id="kondisi"
-                                placeholder="Contoh: Bekas" value="${
-                                    res.data.kondisi_barang
-                                }">
+                            <select name="kondisi" class="form-select" id="kondisi">
+                                <option value="" disabled selected>===Pilih Kondisi Barang===</option>
+                                <option value="Baru" ${
+                                    res.data.kondisi_barang == "Baru"
+                                        ? "selected"
+                                        : ""
+                                }>Baru</option>
+                                <option value="Bekas" ${
+                                    res.data.kondisi_barang == "Bekas"
+                                        ? "selected"
+                                        : ""
+                                }>Bekas</option>
+                            </select>
                             <div class="text-danger kondisi_err"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="keadaan_barang" class="form-label">Keadaan Barang</label>
+                            <select name="keadaan_barang" class="form-select" id="keadaan_barang">
+                                <option value="" disabled selected>===Pilih Keadaan Barang===</option>
+                                <option value="Baik" ${
+                                    res.data.keadaan_barang == "Baik"
+                                        ? "selected"
+                                        : ""
+                                }>Baik</option>
+                                <option value="Kurang Baik" ${
+                                    res.data.keadaan_barang == "Kurang Baik"
+                                        ? "selected"
+                                        : ""
+                                }>Kurang Baik</option>
+                                <option value="Rusak Berat" ${
+                                    res.data.keadaan_barang == "Rusak Berat"
+                                        ? "selected"
+                                        : ""
+                                }>Rusak Berat</option>
+                            </select>
+                            <div class="text-danger keadaan_barang_err"></div>
                         </div>
                         <div class="mb-3">
                             <label for="harga" class="form-label">Harga</label>

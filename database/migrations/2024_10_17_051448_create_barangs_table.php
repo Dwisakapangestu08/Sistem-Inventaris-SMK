@@ -21,9 +21,9 @@ return new class extends Migration
             $table->string('tahun_perolehan')->nullable();
             $table->string('jumlah_barang')->nullable();
             $table->string('harga_barang')->nullable();
-            $table->enum('keadaan_barang', ['Baik', 'Kurang Baik', 'Rusak Berat'])->nullable();
+            $table->string('kondisi_barang')->nullable();
+            $table->string('keadaan_barang',)->nullable();
             $table->string('lokasi_barang')->nullable();
-            $table->text('keterangan')->nullable();
             $table->timestamps();
         });
     }

@@ -82,7 +82,7 @@
                                             <h6>
                                                 @php
                                                     $count = \App\Models\User::where([
-                                                        'role' => '0',
+                                                        'role' => '2',
                                                         'status' => '1',
                                                     ])->count();
                                                 @endphp
@@ -110,7 +110,7 @@
                                             <h6>
                                                 @php
                                                     $count = \App\Models\User::where([
-                                                        'role' => '0',
+                                                        'role' => '2',
                                                         'status' => '0',
                                                     ])->count();
                                                 @endphp

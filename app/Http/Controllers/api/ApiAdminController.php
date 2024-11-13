@@ -23,7 +23,17 @@ class ApiAdminController extends Controller
         $draw   = $request->input('draw');
         $search = $request->input('search.value');
 
-        $member = User::where('status', '0')->orderBy('id', 'desc');
+        $find_active = [
+            'role' => '2',
+            'status' => '1',
+        ];
+
+        $find_not_active = [
+            'role' => '2',
+            'status' => '0',
+        ];
+
+        $member = User::where($find_active)->orWhere($find_not_active)->orderBy('id', 'desc');
 
         if (!empty($search)) {
             $member = $member->where(function ($query) use ($search) {
@@ -289,6 +299,7 @@ class ApiAdminController extends Controller
             $member = $member->where(function ($query) use ($search) {
                 $query->where('name_barang', 'like', "%$search%");
                 $query->orWhere('lokasi_barang', 'like', "%$search%");
+                $query->orWhere('keadaan_barang', 'like', "%$search%");
             });
         }
 
@@ -316,10 +327,16 @@ class ApiAdminController extends Controller
                 'id' => $barang->id,
                 'name_barang' => $barang->name_barang,
                 'name_kategori' => $barang->kategori->name_kategori,
+                'merk_barang' => $barang->merk_barang,
+                'ukuran_barang' => $barang->ukuran_barang,
+                'bahan_barang' => $barang->bahan_barang,
+                'tahun_perolehan' => $barang->tahun_perolehan,
                 'jumlah' => $barang->jumlah_barang,
                 'kondisi' => $barang->kondisi_barang,
                 'harga' => $barang->harga_barang,
-                'lokasi' => $barang->lokasi_barang
+                'keadaan_barang' => $barang->keadaan_barang,
+                'lokasi' => $barang->lokasi_barang,
+                'keterangan' => $barang->keterangan,
             ];
         }
         $result['status']           = true;
@@ -334,18 +351,20 @@ class ApiAdminController extends Controller
             [
                 'name' => 'required',
                 'kategori' => 'required',
-                'lokasi' => 'required',
-                'kondisi' => 'required',
-                'harga' => 'required',
-                'jumlah' => 'required',
+                'merk_barang' => 'nullable',
+                'ukuran_barang' => 'nullable',
+                'bahan_barang' => 'nullable',
+                'tahun_perolehan' => 'nullable',
+                'lokasi' => 'nullable',
+                'kondisi' => 'nullable',
+                'harga' => 'nullable',
+                'jumlah' => 'nullable',
+                'keadaan_barang' => 'nullable',
+                'keterangan' => 'nullable',
             ],
             [
-                'name.required' => 'Nama harus diisi',
-                'kategori.required' => 'Kategori harus diisi',
-                'lokasi.required' => 'Lokasi harus diisi',
-                'kondisi.required' => 'Kondisi harus diisi',
-                'harga.required' => 'Harga harus diisi',
-                'jumlah.required' => 'Jumlah harus diisi',
+                'name.required' => 'Nama barang harus diisi',
+                'kategori.required' => 'Kategori barang harus diisi',
             ]
         );
 
@@ -363,7 +382,12 @@ class ApiAdminController extends Controller
             'lokasi_barang' => $request->lokasi,
             'kondisi_barang' => $request->kondisi,
             'harga_barang' => $request->harga,
-            'jumlah_barang' => $request->jumlah
+            'jumlah_barang' => $request->jumlah,
+            'keadaan_barang' => $request->keadaan_barang,
+            'merk_barang' => $request->merk_barang,
+            'ukuran_barang' => $request->ukuran_barang,
+            'bahan_barang' => $request->bahan_barang,
+            'tahun_perolehan' => $request->tahun_perolehan,
         ]);
 
         if ($barang) {
@@ -405,18 +429,20 @@ class ApiAdminController extends Controller
             [
                 'name' => 'required',
                 'kategori' => 'required',
-                'lokasi' => 'required',
-                'kondisi' => 'required',
-                'harga' => 'required',
-                'jumlah' => 'required',
+                'merk_barang' => 'nullable',
+                'ukuran_barang' => 'nullable',
+                'bahan_barang' => 'nullable',
+                'tahun_perolehan' => 'nullable',
+                'lokasi' => 'nullable',
+                'kondisi' => 'nullable',
+                'harga' => 'nullable',
+                'jumlah' => 'nullable',
+                'keadaan_barang' => 'nullable',
+                'keterangan' => 'nullable',
             ],
             [
                 'name.required' => 'Nama harus diisi',
                 'kategori.required' => 'Kategori harus diisi',
-                'lokasi.required' => 'Lokasi harus diisi',
-                'kondisi.required' => 'Kondisi harus diisi',
-                'harga.required' => 'Harga harus diisi',
-                'jumlah.required' => 'Jumlah harus diisi',
             ]
         );
 
@@ -434,7 +460,13 @@ class ApiAdminController extends Controller
             'lokasi_barang' => $request->lokasi,
             'kondisi_barang' => $request->kondisi,
             'harga_barang' => $request->harga,
-            'jumlah_barang' => $request->jumlah
+            'jumlah_barang' => $request->jumlah,
+            'keadaan_barang' => $request->keadaan_barang,
+            'merk_barang' => $request->merk_barang,
+            'ukuran_barang' => $request->ukuran_barang,
+            'bahan_barang' => $request->bahan_barang,
+            'tahun_perolehan' => $request->tahun_perolehan,
+            'keterangan' => $request->keterangan
         ]);
 
         if ($barang) {
