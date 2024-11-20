@@ -44,3 +44,12 @@ Route::middleware(IsApi::class)->group(function () {
         });
     });
 });
+
+Route::middleware(IsApi::class)->group(function () {
+    Route::prefix('v1')->group(function () {
+        Route::post('/logout', [ApiAuthController::class, 'logout']);
+        Route::prefix('user')->group(function () {
+            Route::post('/daftar-pengajuan', [ApiAuthController::class, 'daftar_pengajuan']);
+        });
+    });
+});

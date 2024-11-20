@@ -12,8 +12,10 @@
     @yield('link-api')
 
     <!-- Favicons -->
-    <link href="{{ url('assets/img/favicon.png') }}" rel="icon">
-    <link href="{{ url('assets/img/apple-touch-icon.png') }}" rel="apple-touch-icon">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url('images/favicon_io/apple-touch-icon.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url('images/favicon_io/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url('images/favicon_io/favicon-16x16.png') }}">
+    <link rel="manifest" href="{{ url('images/favicon_io/site.webmanifest') }}">
 
     <!-- Google Fonts -->
     <link href="https://fonts.gstatic.com" rel="preconnect">
@@ -48,8 +50,8 @@
 
         <div class="d-flex align-items-center justify-content-between">
             <a href="index.html" class="logo d-flex align-items-center">
-                <img src="{{ url('assets/img/logo.png') }}" alt="">
-                <span class="d-none d-lg-block">Admin</span>
+                <img src="{{ url('images/logo.png') }}" alt="">
+                <span class="d-none d-lg-block">APK Inventaris</span>
             </a>
             <i class="bi bi-list toggle-sidebar-btn"></i>
         </div><!-- End Logo -->
@@ -67,7 +69,7 @@
                     <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
                         <li class="dropdown-header">
                             <h6>{{ Auth::user()->name }}</h6>
-                            <span>{{ Auth::user()->role == 1 ? 'Admin' : 'User' }}</span>
+                            <span>{{ Auth::user()->role == 1 ? 'Admin' : 'Guru' }}</span>
                         </li>
                         <li>
                             <hr class="dropdown-divider">

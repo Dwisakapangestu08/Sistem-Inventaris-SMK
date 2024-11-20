@@ -1,12 +1,12 @@
 <?php
 
+use App\Http\Middleware\IsUser;
 use App\Http\Middleware\IsAdmin;
 use App\Http\Middleware\IsGuest;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HomeController;
-
-
+use App\Http\Controllers\UserController;
 
 Route::middleware(IsGuest::class)->group(function () {
     Route::get('/', [AuthController::class, 'index']);
@@ -23,5 +23,14 @@ Route::middleware(IsAdmin::class)->group(function () {
         Route::get('/kategori-barang', [HomeController::class, 'kategori_barang']);
         Route::get('/penanggung-jawab', [HomeController::class, 'penanggung_jawab']);
         Route::get('/pengajuan-barang', [HomeController::class, 'pengajuan_barang']);
+    });
+});
+
+Route::middleware(IsUser::class)->group(function () {
+    Route::get('/logout/{id}', [UserController::class, 'logout']);
+    Route::prefix('user')->group(function () {
+        Route::get('/', [UserController::class, 'index']);
+        Route::get('/daftar-pengajuan', [UserController::class, 'daftar_pengajuan']);
+        Route::get('/pengajuan-pembelian', [UserController::class, 'pengajuan_pembelian']);
     });
 });
