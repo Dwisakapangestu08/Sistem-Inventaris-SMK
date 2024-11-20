@@ -719,8 +719,9 @@ class ApiAdminController extends Controller
                 'harga' => $data->harga_perkiraan,
                 'kondisi' => $data->kondisi,
                 'total' => $data->jumlah_barang_pengajuan * $data->harga_perkiraan,
-                'tujuan' => $data->tujuan->pengajuan,
-                'status' => $data->status
+                'tujuan' => $data->tujuan_pengajuan,
+                'status' => $data->status,
+                // 'alasan' => $data->request_pengajuan->alasan_penolakan
             ];
         }
         $result['status']           = true;
@@ -744,92 +745,143 @@ class ApiAdminController extends Controller
         // Membuat status pengajuan menjadi approved
         if ($type == 'approved') {
             // Membuat query untuk mengupdate status user menjadi approved
-            $approved = User::where('id', $id)->update([
+            $approved = Pengajuan::where('id', $id)->update([
                 'status' => '1'
             ]);
 
             // Jika status berhasil diupdate, maka akan dikembalikan response dengan status true dan message "Akun Diaktifkan"
             if ($approved) {
+                $req_approved = Request_Pengajuan::create([
+                    'pengajuan_id' => $id,
+                    'isAccept' => true,
+                    'alasan_penolakan' => null,
+                ]);
+
                 return response()->json([
                     'success' => true,
-                    'message' => 'Akun Diaktifkan',
-                ]);
+                    'message' => 'Pengajuan Diaktifkan',
+                    'datas' => $req_approved
+                ], 200);
             }
 
             // Jika status gagal diupdate, maka akan dikembalikan response dengan status false dan message "Akun Gagal Diaktifkan"
             return response()->json([
                 'success' => false,
-                'message' => 'Akun Gagal Diaktifkan',
-            ]);
+                'message' => 'Pengajuan Gagal Diaktifkan',
+            ], 400);
         }
 
-        // Membuat status pengajuan menjadi banned
-        if ($type == 'banned') {
-            // Membuat query untuk mengupdate status user menjadi banned
-        } else if ($type == 'banned') {
-            $banned = User::where('id', $id)->update([
-                'status' => '3'
-            ]);
-
-            // Jika status berhasil diupdate, maka akan dikembalikan response dengan status true dan message "Akun Dibanned"
-            if ($banned) {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Akun Dibanned',
-                ]);
-            }
-
-            // Jika status gagal diupdate, maka akan dikembalikan response dengan status false dan message "Akun Gagal Dibanned"
-            return response()->json([
-                'success' => false,
-                'message' => 'Akun Gagal Dibanned',
-            ]);
-        }
-
-        // Membuat status pengajuan menjadi rejected
-        if ($type == "rejected") {
+        if ($type == 'rejected') {
             // Membuat query untuk mengupdate status user menjadi rejected
-        } else if ($type == "rejected") {
-            $rejected = User::where('id', $id)->update([
-                'status' => '4'
+            $rejected = Pengajuan::where('id', $id)->update([
+                'status' => '2'
             ]);
 
-            // Jika status berhasil diupdate, maka akan dikembalikan response dengan status true dan message "Akun Ditolak"
             if ($rejected) {
+                $req_rejected = Request_Pengajuan::create([
+                    'pengajuan_id' => $id,
+                    'isAccept' => false,
+                    'alasan_penolakan' => null,
+                ]);
                 return response()->json([
                     'success' => true,
-                    'message' => 'Akun Ditolak',
-                ]);
-            }
-        }
-
-        // Membuat status pengajuan menjadi unbanned
-        if ($type == "unbanned") {
-            // Membuat query untuk mengupdate status user menjadi unbanned
-        } else {
-            $unbanned = User::where('id', $id)->update([
-                'status' => '1'
-            ]);
-
-            // Jika status berhasil diupdate, maka akan dikembalikan response dengan status true dan message "Akun Diaktifkan"
-            if ($unbanned) {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Akun Diaktifkan',
-                ]);
+                    'message' => 'Pengajuan Ditolak',
+                    'datas' => $req_rejected
+                ], 200);
             }
 
-            // Jika status gagal diupdate, maka akan dikembalikan response dengan status false dan message "Akun Gagal Diaktifkan"
             return response()->json([
                 'success' => false,
-                'message' => 'Akun Gagal Diaktifkan',
-            ]);
+                'message' => 'Pengajuan Gagal Ditolak',
+            ], 400);
         }
-
         // Jika tidak ada parameter type yang sesuai, maka akan dikembalikan response dengan status false dan message "Akun Gagal Diaktifkan"
         return response()->json([
             'success' => false,
-            'message' => 'Akun Gagal Diaktifkan',
+            'message' => 'Pengajuan Gagal Diaktifkan',
+        ], 400);
+    }
+
+    /**
+     * Retrieve a specific request pengajuan by its ID.
+     *
+     * This function queries the database for a Request_Pengajuan record with the specified ID.
+     * If the record is found, it returns the data as a JSON response with a success status.
+     * If not found, it returns a JSON response with a failure status and an error message.
+     *
+     * @param int $id The ID of the request pengajuan to retrieve.
+     * @return \Illuminate\Http\JsonResponse The JSON response containing the result of the query.
+     */
+    public function reject_get($id)
+    {
+        // Query the database for the Request_Pengajuan record with the given ID
+        $data = Request_Pengajuan::where('id', $id)->first();
+
+        // Check if data is found
+        if ($data) {
+            // Return a JSON response with the data and a success status
+            return response()->json([
+                'success' => true,
+                'data' => $data,
+            ], 200);
+        }
+
+        // Return a JSON response indicating that the record was not found
+        return response()->json([
+            'success' => false,
+            'message' => 'Request Pengajuan Tidak Ditemukan',
+        ], 400);
+    }
+
+    /**
+     *
+     * Membuat penolakan pengajuan berdasarkan id pengajuan dan alasan penolakan yang diberikan.
+     * Metode ini akan mengupdate status pengajuan menjadi 3 (ditolak) dan menambahkan alasan penolakan.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param int $id id pengajuan yang akan ditolak
+     * @return \Illuminate\Http\Response
+     */
+    public function penolakan_pengajuan(Request $request, $id)
+    {
+        // Validasi input user
+        $validation = Validator::make($request->all(), [
+            'alasan_penolakan' => 'required',
+        ], [
+            'alasan_penolakan.required' => 'Alasan Penolakan harus diisi',
         ]);
+
+        // Jika validasi gagal, maka akan dikembalikan response dengan status false dan message "Validasi Gagal"
+        if ($validation->fails()) {
+            return response()->json([
+                'success' => false,
+                'validation' => true,
+                'message' => $validation->errors(),
+            ], 400);
+        }
+
+        // Membuat penolakan pengajuan berdasarkan id pengajuan dan alasan penolakan yang diberikan
+        $penolakan = Request_Pengajuan::where('pengajuan_id', $id)->update([
+            'alasan_penolakan' => $request->alasan_penolakan
+        ]);
+
+        // Jika penolakan berhasil, maka akan mengupdate status pengajuan menjadi 3 (ditolak)
+        if ($penolakan) {
+            $pengajuan = Pengajuan::where('id', $id)->update([
+                'status' => 3
+            ]);
+
+            // Jika update status pengajuan berhasil, maka akan dikembalikan response dengan status true dan message "Alasan Penolakan Berhasil Ditambahkan"
+            return response()->json([
+                'success' => true,
+                'message' => 'Alasan Penolakan Berhasil Ditambahkan',
+            ], 200);
+        }
+
+        // Jika penolakan gagal, maka akan dikembalikan response dengan status false dan message "Alasan Penolakan Gagal Ditambahkan"
+        return response()->json([
+            'success' => false,
+            'message' => 'Alasan Penolakan Gagal Ditambahkan',
+        ], 400);
     }
 }

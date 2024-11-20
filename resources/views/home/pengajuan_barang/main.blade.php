@@ -4,18 +4,12 @@
 
 @section('link-api')
     <meta name="link-api" link="{{ url('/api/v1/admin/daftar-pengajuan') }}">
-    <meta name="link-api-tambah" link="{{ url('/api/v1/admin/tambah-penanggung-jawab') }}">
-    <meta name="link-api-edit" link="{{ url('/api/v1/admin/edit-penanggung-jawab') }}">
-    <meta name="link-api-update" link="{{ url('/api/v1/admin/update-penanggung-jawab') }}">
-    <meta name="link-api-hapus" link="{{ url('/api/v1/admin/hapus-penanggung-jawab') }}">
+    <meta name="link-api-status" link="{{ url('/api/v1/admin/status-pengajuan') }}">
+    <meta name="link-api-reject" link="{{ url('/api/v1/admin/reject') }}">
+    <meta name="link-api-penolakan" link="{{ url('/api/v1/admin/penolakan-pengajuan') }}">
 @endsection
 
 @section('content')
-    @php
-        // $gurus = \App\Models\User::where('role', '2')->where('status', '1')->get();
-        // // dd($gurus);
-        // $barangs = \App\Models\Barang::all();
-    @endphp
     <main id="main" class="main">
         <div class="pagetitle">
             <h1>Pengajuan Barang</h1>
@@ -61,6 +55,22 @@
             </div>
         </section>
     </main>
+
+    <div class="modal fade" id="alasanModal" tabindex="-1" aria-labelledby="alasanModal" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="alasanModal">Tuliskan Alasan Penolakan</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="form_penolakan">
+                    <div class="modal-body">
+                        @csrf
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
 @endsection
 

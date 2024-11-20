@@ -1,4 +1,28 @@
 $(document).ready(function () {
+    const validasi = (message) => {
+        $.each(message, function (key, value) {
+            $("." + key + "_err").text(value);
+        });
+    };
+
+    const formatCurrency = (number) => {
+        return new Intl.NumberFormat("id-ID", {
+            style: "currency",
+            currency: "IDR",
+            minimumFractionDigits: 0, // Tidak menampilkan angka desimal
+            maximumFractionDigits: 0, // Tidak menampilkan angka desimal
+        }).format(number);
+    };
+    /**
+     * Initializes and configures the DataTable for displaying pengajuan data.
+     *
+     * This function fetches data from a specified API endpoint and populates
+     * the DataTable with the retrieved data. The table supports server-side
+     * processing and includes columns for various attributes such as "nama",
+     * "barang", "jumlah", "harga", etc. It also includes custom render
+     * functions for displaying formatted currency, status badges, and action
+     * buttons based on the status of each pengajuan item.
+     */
     const load_table = () => {
         let url = $("meta[name='link-api']").attr("link");
         $("table#table_pengajuan").DataTable().destroy();
@@ -16,6 +40,14 @@ $(document).ready(function () {
             columns: [
                 {
                     data: null,
+                    /**
+                     * Render nomor urut
+                     * @param {Object} data data row from server
+                     * @param {String} type type of data
+                     * @param {Object} row data row from server
+                     * @param {Object} meta data meta from datatables
+                     * @returns {String} nomor urut di awali dengan tanda titik
+                     */
                     render: function (data, type, row, meta) {
                         return (
                             meta.row + meta.settings._iDisplayStart + 1 + "."
@@ -25,9 +57,24 @@ $(document).ready(function () {
                 { data: "nama", name: "nama" },
                 { data: "barang", name: "barang" },
                 { data: "jumlah", name: "jumlah" },
-                { data: "harga", name: "harga" },
+                {
+                    data: "harga",
+                    render: (res) => {
+                        return formatCurrency(res);
+                    },
+                },
                 { data: "kondisi", name: "kondisi" },
-                { data: "total", name: "total" },
+                {
+                    data: "total",
+                    /**
+                     * Render total harga
+                     * @param {Number} res response from server
+                     * @returns {String} formatted currency string
+                     */
+                    render: (res) => {
+                        return formatCurrency(res);
+                    },
+                },
                 { data: "tujuan", name: "tujuan" },
                 {
                     data: null,
@@ -39,40 +86,43 @@ $(document).ready(function () {
                     render: (res) => {
                         let span = "";
                         if (res.status == 0) {
-                            span = `<span class="badge bg-danger">Belum aktif</span>`;
+                            span = `<span class="badge bg-warning">Pending</span>`;
                         } else if (res.status == 1) {
-                            span = `<span class="badge bg-success">Aktif</span>`;
-                        } else if (res.status == 3) {
-                            span = `<span class="badge bg-danger">Akun diblokir</span>`;
+                            span = `<span class="badge bg-success">Diterima</span>`;
                         } else {
-                            span = `<span class="badge bg-warning">Ditolak</span>`;
+                            span = `<span class="badge bg-danger">Ditolak</span>`;
                         }
                         return span;
                     },
                 },
                 {
                     data: null,
+
                     /**
-                     * Render a button that can be used to manage the status of the Pengajuan Barang.
-                     * If the status is 0, the button will be "Aktifkan" and "Tolak".
-                     * If the status is 1, the button will be "Banned".
-                     * If the status is 3, the button will be "UnBanned".
-                     * If the status is 4, the button will be "Aktifkan".
-                     * @param {Object} res - The data of the Pengajuan Barang.
-                     * @returns {String} A string containing the HTML of the button.
+                     * Generates action links based on the status of a request.
+                     *
+                     * @param {Object} res - Response object containing request details.
+                     * @param {number} res.status - Status of the request (0 for pending, 1 for processing).
+                     * @param {string} res.id - Identifier of the request.
+                     * @param {string} res.name - Name associated with the request.
+                     * @returns {string} HTML string containing action buttons for the request.
                      */
                     render: (res) => {
                         let link = "";
                         if (res.status == 0) {
-                            link = `<a href="#" class="btn btn-success btn-sm btn-aktif" data-id="${res.id}" data-name="${res.name}" data-type="approved" style="color: #FFF;" title="Aktifkan"><i class="bi bi-check-circle"></i></a> 
+                            link = `<a href="#" class="btn btn-success btn-sm btn-aktif" data-id="${res.id}" data-barang="${res.barang}" data-type="approved" style="color: #FFF;" title="Terima"><i class="bi bi-check-circle"></i></a> 
                             |
-                                <a href="#" class="btn btn-danger btn-sm btn-reject" data-id="${res.id}" data-name="${res.name}" data-type="rejected" style="color: #FFF;" title="tolak"><i class="bi bi-x-circle"></i></a>`;
+                                <a href="#" class="btn btn-danger btn-sm btn-reject" data-id="${res.id}" data-barang="${res.barang}" data-type="rejected" style="color: #FFF;" title="Tolak"><i class="bi bi-x-circle"></i></a>`;
                         } else if (res.status == 1) {
-                            link = `<a href="#" class="btn btn-danger btn-sm btn-banned" data-id="${res.id}" data-name="${res.name}" data-type="banned" style="color: #FFF;" title="Banned"><i class="bi bi-ban"></i></a>`;
+                            link = `<span class="badge bg-success">Proses....</span>`;
+                        } else if (res.status == 2) {
+                            link = `
+                            <button id="btn-reject-message" class="btn btn-danger btn-sm btn-reject-message" data-bs-toggle="modal" data-id="${res.id}" data-bs-target="#alasanModal" style="color: #FFF;" title="Tulis Alasan Penolakan"><i class="bi bi-chat-right-text-fill"></i></button>
+                            `;
                         } else if (res.status == 3) {
-                            link = `<a href="#" class="btn btn-success btn-sm btn-unbanned" data-id="${res.id}" data-name="${res.name}" data-type="unbanned" style="color: #FFF;" title="UnBanned"><i class="bi bi-check"></i></a>`;
-                        } else if (res.status == 4) {
-                            link = `<a href="#" class="btn btn-danger btn-sm btn-aktif" data-id="${res.id}" data-name="${res.name}" data-type="deleted" style="color: #FFF;" title="Aktifkan"><i class="bi bi-check-circle"></i></a>`;
+                            link = `<span class="badge bg-success">Pesan Terkirim</span>`;
+                        } else {
+                            link = `<span class="badge bg-danger">Error !!</span>`;
                         }
                         return link;
                     },
@@ -82,114 +132,153 @@ $(document).ready(function () {
     };
     load_table();
 
-    $("#tambah_penanggung_jawab").on("submit", function (e) {
-        e.preventDefault();
-        let url = $("meta[name='link-api-tambah']").attr("link");
-        $(".btn-simpan").prop("disabled", true);
-        $.ajax({
-            type: "POST",
-            url: url,
-            data: new FormData(this),
-            dataType: "json",
-            contentType: false,
-            processData: false,
-            headers: {
-                Authorization: "Bearer " + get_cookie("token"),
-            },
-            success: function (res) {
-                Swal.fire({
-                    icon: "success",
-                    title: "Berhasil",
-                    text: res.message,
-                    showConfirmButton: false,
-                    timer: 3000,
-                }).then(() => {
-                    $(".btn-simpan").prop("disabled", false);
-                    $("#tambah_penanggung_jawab").trigger("reset");
-                    load_table();
+    $(document).on("click", ".btn-aktif", function () {
+        let id = $(this).data("id");
+        let barang = $(this).data("barang");
+        let type = $(this).data("type");
+        let url = $("meta[name='link-api-status']").attr("link");
+        Swal.fire({
+            title: "Apakah anda yakin?",
+            text: "Anda akan yakin menerima pengajuan barang " + barang,
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Ya, terima!",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    data: {
+                        id: id,
+                        type: type,
+                    },
+                    headers: {
+                        Authorization: "Bearer " + get_cookie("token"),
+                    },
+                    // Success callback when the ajax request is completed successfully
+                    // Fires a success notification using Swal and then reloads the table
+                    // by calling the load_table function
+                    success: function (response) {
+                        Swal.fire({
+                            icon: "success",
+                            title: "Success",
+                            text: response.message,
+                            showConfirmButton: false,
+                            timer: 3000,
+                        }).then(() => {
+                            load_table();
+                        });
+                    },
+                    /**
+                     * Error callback when the ajax request is completed with an error
+                     * Fires an error notification using Swal
+                     * @param {Object} xhr - The XMLHttpRequest object
+                     */
+                    error: function (xhr) {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Error",
+                            text: xhr.responseJSON.message,
+                            showConfirmButton: false,
+                            timer: 3000,
+                        });
+                    },
                 });
-            },
-            error: function (xhr) {
-                if (xhr.responseJSON.validation) {
-                    validasi(xhr.responseJSON.message);
-                } else {
-                    Swal.fire({
-                        icon: "error",
-                        title: "Gagal",
-                        text: xhr.responseJSON.message,
-                        showConfirmButton: false,
-                        timer: 3000,
-                    });
-                }
-            },
+            }
         });
     });
 
-    $(document).on("click", ".btn-edit", function (e) {
+    $(document).on("click", ".btn-reject", function () {
+        let id = $(this).data("id");
+        let barang = $(this).data("barang");
+        let type = $(this).data("type");
+        let url = $("meta[name='link-api-status']").attr("link");
+        Swal.fire({
+            title: "Apakah anda yakin?",
+            text: "Anda akan menolak pengajuan barang " + barang,
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Ya, tolak barang ini!",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    data: {
+                        id: id,
+                        type: type,
+                    },
+                    headers: {
+                        Authorization: "Bearer " + get_cookie("token"),
+                    },
+                    success: function (response) {
+                        Swal.fire({
+                            icon: "success",
+                            title: "Success",
+                            text: response.message,
+                            showConfirmButton: false,
+                            timer: 3000,
+                        }).then(() => {
+                            load_table();
+                        });
+                    },
+                    error: function (xhr) {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Error",
+                            text: xhr.responseJSON.message,
+                            showConfirmButton: false,
+                            timer: 3000,
+                        });
+                    },
+                });
+            }
+        });
+    });
+
+    $(document).on("click", ".btn-reject-message", function (e) {
         e.preventDefault();
         let id = $(this).data("id");
-        let url = $("meta[name='link-api-edit']").attr("link");
+        let url = $("meta[name='link-api-reject']").attr("link");
         $.ajax({
             type: "GET",
             url: url + "/" + id,
             headers: {
                 Authorization: "Bearer " + get_cookie("token"),
             },
+            /**
+             * Success callback for AJAX request to get detail of a specific
+             * rejection reason.
+             *
+             * @param {Object} res - Response object from AJAX request
+             */
             success: function (res) {
-                $("#editModal .modal-body").html(
+                $("#alasanModal .modal-body").html(
                     `
-                        <div class="mb-3">
-                            <label for="guru" class="form-label">Guru</label>
-                            <input type="hidden" id="id" value="${res.data.id}">
-                            <select name="guru" id="guru" class="form-select">
-                                <option value="">Pilih Guru</option>
-                                ${res.guru
-                                    .map(
-                                        (element) => `
-                                    <option value="${element.id}" ${
-                                            element.id == res.data.user_id
-                                                ? "selected"
-                                                : ""
-                                        }>${element.name}</option>
-                                `
-                                    )
-                                    .join("")}
-                            </select>
-                            <div class="text-danger guru_err"></div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="barang" class="form-label">Barang</label>
-                            <select name="barang" id="barang" class="form-select">
-                                <option value="">Pilih Barang</option>
-                                ${res.barang
-                                    .map(
-                                        (element) => `
-                                    <option value="${element.id}" ${
-                                            element.id == res.data.barang_id
-                                                ? "selected"
-                                                : ""
-                                        }>${element.name_barang}</option>
-                                `
-                                    )
-                                    .join("")}
-                            </select>
-                            <div class="text-danger barang_err"></div>
-                        </div>
-
-                        <hr>
-                        <div class="d-flex justify-content-end">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary btn-update mx-2">Save changes</button>
-                        </div>
+                    <div class="mb-4">
+                    <input type="hidden" name="id" id="id" value="${res.data.id}">
+                        <label for="alasan_penolakan" class="form-label">Alasan Penolakan</label>
+                        <textarea name="alasan_penolakan" id="alasan_penolakan" class="form-control" rows="3"></textarea>
+                        <div class="text-danger alasan_penolakan_err"></div>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-end">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary btn-update mx-2">Save changes</button>
+                    </div>
                 `
                 );
             },
         });
     });
 
-    $("#update_penanggung_jawab").on("submit", function (e) {
+    $("#form_penolakan").on("submit", function (e) {
         e.preventDefault();
-        let url = $("meta[name='link-api-update']").attr("link");
+        let url = $("meta[name='link-api-penolakan']").attr("link");
         let id = $("#id").val();
         $(".btn-update").prop("disabled", true);
         $.ajax({
@@ -203,20 +292,19 @@ $(document).ready(function () {
                 Authorization: "Bearer " + get_cookie("token"),
             },
             success: function (res) {
-                // console.log(res);
+                // console.log(res.data.alasan_penolakan);
                 Swal.fire({
                     icon: "success",
-                    title: "Berhasil",
+                    title: "Success",
                     text: res.message,
                     showConfirmButton: false,
                     timer: 3000,
                 }).then(() => {
-                    $(".btn-update").prop("disabled", false);
-                    $("#editModal").modal("hide");
+                    $("#alasanModal").modal("hide");
                     load_table();
                 });
             },
-            error: function (xhr) {
+            error: function (xhr, status, error) {
                 console.log(xhr);
                 $(".btn-update").prop("disabled", false);
                 if (xhr.responseJSON.validation) {
@@ -232,53 +320,6 @@ $(document).ready(function () {
                 }
                 load_table();
             },
-        });
-    });
-
-    $(document).on("click", ".btn-delete", function (e) {
-        e.preventDefault();
-        let url = $("meta[name='link-api-hapus']").attr("link");
-        let id = $(this).data("id");
-        let nama = $(this).data("nama");
-        let barang = $(this).data("barang");
-        Swal.fire({
-            title: "Hapus Penanggung Jawab ?",
-            text: nama + " - " + barang,
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Ya, Hapus!",
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $.ajax({
-                    url: url + "/" + id,
-                    type: "GET",
-                    headers: {
-                        Authorization: "Bearer " + get_cookie("token"),
-                    },
-                    success: function (res) {
-                        Swal.fire({
-                            icon: "success",
-                            title: "Berhasil",
-                            text: res.message,
-                            showConfirmButton: false,
-                            timer: 3000,
-                        }).then(() => {
-                            load_table();
-                        });
-                    },
-                    error: function (xhr) {
-                        Swal.fire({
-                            icon: "error",
-                            title: "Gagal",
-                            text: xhr.responseJSON.message,
-                            showConfirmButton: false,
-                            timer: 3000,
-                        });
-                    },
-                });
-            }
         });
     });
 });

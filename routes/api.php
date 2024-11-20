@@ -38,6 +38,9 @@ Route::middleware(IsApi::class)->group(function () {
             Route::get('/hapus-penanggung-jawab/{id}', [ApiAdminController::class, 'hapus_penanggung_jawab']);
             // Pengajuan
             Route::post('/daftar-pengajuan', [ApiAdminController::class, 'daftar_pengajuan']);
+            Route::post('/status-pengajuan', [ApiAdminController::class, 'status_pengajuan']);
+            Route::get('/reject/{id}', [ApiAdminController::class, 'reject_get']);
+            Route::post('/penolakan-pengajuan/{id}', [ApiAdminController::class, 'penolakan_pengajuan']);
         });
     });
 });

@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('pengajuan_id')->references('id')->on('pengajuans')->onDelete('cascade');
             $table->boolean('isAccept')->nullable();
-            $table->string('alasan_penolakan');
+            $table->string('alasan_penolakan')->nullable();
             $table->timestamps();
         });
     }

@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('kondisi');
             $table->string('total_harga');
             $table->string('tujuan_pengajuan');
-            $table->string('status');
+            $table->string('status')->nullable();
             $table->timestamps();
         });
     }
