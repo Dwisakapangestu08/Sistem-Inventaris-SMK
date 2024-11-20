@@ -36,6 +36,8 @@ Route::middleware(IsApi::class)->group(function () {
             Route::get('/edit-penanggung-jawab/{id}', [ApiAdminController::class, 'edit_penanggung_jawab']);
             Route::post('/update-penanggung-jawab/{id}', [ApiAdminController::class, 'update_penanggung_jawab']);
             Route::get('/hapus-penanggung-jawab/{id}', [ApiAdminController::class, 'hapus_penanggung_jawab']);
+            // Pengajuan
+            Route::post('/daftar-pengajuan', [ApiAdminController::class, 'daftar_pengajuan']);
         });
     });
 });

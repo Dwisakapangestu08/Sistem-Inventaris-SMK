@@ -17,6 +17,10 @@ return new class extends Migration
             $table->string('name_barang_pengajuan');
             $table->string('jumlah_barang_pengajuan');
             $table->string('harga_perkiraan');
+            $table->string('kondisi');
+            $table->string('total_harga');
+            $table->string('tujuan_pengajuan');
+            $table->string('status');
             $table->timestamps();
         });
     }

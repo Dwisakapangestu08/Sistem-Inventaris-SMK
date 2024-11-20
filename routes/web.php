@@ -22,5 +22,6 @@ Route::middleware(IsAdmin::class)->group(function () {
         Route::get('/barang', [HomeController::class, 'barang']);
         Route::get('/kategori-barang', [HomeController::class, 'kategori_barang']);
         Route::get('/penanggung-jawab', [HomeController::class, 'penanggung_jawab']);
+        Route::get('/pengajuan-barang', [HomeController::class, 'pengajuan_barang']);
     });
 });

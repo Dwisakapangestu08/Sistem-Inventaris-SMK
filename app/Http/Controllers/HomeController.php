@@ -50,4 +50,11 @@ class HomeController extends Controller
             'title' => 'Penanggung Jawab'
         ]);
     }
+
+    public function pengajuan_barang()
+    {
+        return view('home.pengajuan_barang.main', [
+            'title' => 'Pengajuan Barang'
+        ]);
+    }
 }

@@ -53,6 +53,14 @@
          </li>
          <!-- End Barang Nav -->
 
+         <li class="nav-item">
+             <a class="nav-link {{ $title == 'List Pengajuan' ? '' : 'collapsed' }}" href="/admin/pengajuan-barang">
+                 <i class="bi bi-clipboard2-pulse-fill"></i>
+                 <span>List Pengajuan</span>
+             </a>
+         </li>
+         <!-- End Penanggung Jawab Nav -->
+
      </ul>
 
  </aside><!-- End Sidebar-->

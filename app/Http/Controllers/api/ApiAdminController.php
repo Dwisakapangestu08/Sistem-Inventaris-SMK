@@ -8,6 +8,8 @@ use App\Models\Kategori;
 use App\Models\Penanggung_Jawab;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Pengajuan;
+use App\Models\Request_Pengajuan;
 use Illuminate\Support\Facades\Validator;
 
 class ApiAdminController extends Controller
@@ -637,6 +639,12 @@ class ApiAdminController extends Controller
         ]);
     }
 
+    /**
+     * Menghapus penanggung jawab berdasarkan id yang diberikan
+     *
+     * @param int $id id penanggung jawab yang akan dihapus
+     * @return \Illuminate\Http\Response
+     */
     public function hapus_penanggung_jawab($id)
     {
         $penanggung_jawab = Penanggung_Jawab::where('id', $id)->delete();
@@ -652,5 +660,176 @@ class ApiAdminController extends Controller
             'success' => false,
             'message' => 'Penanggung Jawab Gagal Dihapus',
         ], 400);
+    }
+
+    /**
+     * Mengambil daftar pengajuan berdasarkan parameter yang diberikan
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function daftar_pengajuan(Request $request)
+    {
+        // Mendapatkan parameter draw, start, length, dan search dari request
+        $start  = $request->input('start', 0);
+        $length = $request->input('length', 10);
+        $draw   = $request->input('draw');
+        $search = $request->input('search.value');
+
+        // Membuat query untuk mengambil data pengajuan
+        $member = Pengajuan::orderBy('id', 'desc');
+
+        // Jika ada parameter search, maka query akan di-filter berdasarkan parameter search
+        if (!empty($search)) {
+            $member = $member->where(function ($query) use ($search) {
+                $query->where('user_id', 'like', "%$search%");
+                $query->orWhere('kondisi', 'like', "%$search%");
+            });
+        }
+
+        // Menghitung total data yang ada di database
+        $total = $member->count();
+
+        // Jika tidak ada data, maka akan dikembalikan response dengan status false dan message "Data tidak ditemukan"
+        if ($total == 0) {
+            $result['recordsTotal']     = 0;
+            $result['recordsFiltered']  = 0;
+            $result['draw']             = $draw;
+            $result['data']             = [];
+            $result['status']           = false;
+            $result['message']          = "Data tidak ditemukan";
+            return response($result);
+        }
+
+        // Mengambil data pengajuan berdasarkan parameter draw, start, dan length
+        $datas = $member->offset($start)->limit($length)->get();
+
+        // Mengisi array result dengan data yang telah diambil
+        $result['recordsTotal']     = $total;
+        $result['recordsFiltered']  = $total;
+        $result['draw']             = $draw;
+        // $result['data']             = $data;
+        $result['data']             = [];
+        foreach ($datas as $data) {
+            $result['data'][] = [
+                'id' => $data->id,
+                'nama' => $data->user->name,
+                'barang' => $data->name_barang_pengajuan,
+                'jumlah' => $data->jumlah_barang_pengajuan,
+                'harga' => $data->harga_perkiraan,
+                'kondisi' => $data->kondisi,
+                'total' => $data->jumlah_barang_pengajuan * $data->harga_perkiraan,
+                'tujuan' => $data->tujuan->pengajuan,
+                'status' => $data->status
+            ];
+        }
+        $result['status']           = true;
+        $result['message']          = "OK";
+        return response($result);
+    }
+
+
+    /**
+     * Membuat status pengajuan menjadi approved, banned, rejected, atau unbanned
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function status_pengajuan(Request $request)
+    {
+        // Mendapatkan parameter id dan type dari request
+        $id = $request->id;
+        $type = $request->type;
+
+        // Membuat status pengajuan menjadi approved
+        if ($type == 'approved') {
+            // Membuat query untuk mengupdate status user menjadi approved
+            $approved = User::where('id', $id)->update([
+                'status' => '1'
+            ]);
+
+            // Jika status berhasil diupdate, maka akan dikembalikan response dengan status true dan message "Akun Diaktifkan"
+            if ($approved) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Akun Diaktifkan',
+                ]);
+            }
+
+            // Jika status gagal diupdate, maka akan dikembalikan response dengan status false dan message "Akun Gagal Diaktifkan"
+            return response()->json([
+                'success' => false,
+                'message' => 'Akun Gagal Diaktifkan',
+            ]);
+        }
+
+        // Membuat status pengajuan menjadi banned
+        if ($type == 'banned') {
+            // Membuat query untuk mengupdate status user menjadi banned
+        } else if ($type == 'banned') {
+            $banned = User::where('id', $id)->update([
+                'status' => '3'
+            ]);
+
+            // Jika status berhasil diupdate, maka akan dikembalikan response dengan status true dan message "Akun Dibanned"
+            if ($banned) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Akun Dibanned',
+                ]);
+            }
+
+            // Jika status gagal diupdate, maka akan dikembalikan response dengan status false dan message "Akun Gagal Dibanned"
+            return response()->json([
+                'success' => false,
+                'message' => 'Akun Gagal Dibanned',
+            ]);
+        }
+
+        // Membuat status pengajuan menjadi rejected
+        if ($type == "rejected") {
+            // Membuat query untuk mengupdate status user menjadi rejected
+        } else if ($type == "rejected") {
+            $rejected = User::where('id', $id)->update([
+                'status' => '4'
+            ]);
+
+            // Jika status berhasil diupdate, maka akan dikembalikan response dengan status true dan message "Akun Ditolak"
+            if ($rejected) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Akun Ditolak',
+                ]);
+            }
+        }
+
+        // Membuat status pengajuan menjadi unbanned
+        if ($type == "unbanned") {
+            // Membuat query untuk mengupdate status user menjadi unbanned
+        } else {
+            $unbanned = User::where('id', $id)->update([
+                'status' => '1'
+            ]);
+
+            // Jika status berhasil diupdate, maka akan dikembalikan response dengan status true dan message "Akun Diaktifkan"
+            if ($unbanned) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Akun Diaktifkan',
+                ]);
+            }
+
+            // Jika status gagal diupdate, maka akan dikembalikan response dengan status false dan message "Akun Gagal Diaktifkan"
+            return response()->json([
+                'success' => false,
+                'message' => 'Akun Gagal Diaktifkan',
+            ]);
+        }
+
+        // Jika tidak ada parameter type yang sesuai, maka akan dikembalikan response dengan status false dan message "Akun Gagal Diaktifkan"
+        return response()->json([
+            'success' => false,
+            'message' => 'Akun Gagal Diaktifkan',
+        ]);
     }
 }

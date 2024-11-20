@@ -11,6 +11,10 @@ class Pengajuan extends Model
         'name_barang_pengajuan',
         'jumlah_barang_pengajuan',
         'harga_perkiraan',
+        'kondisi',
+        'total_harga',
+        'tujuan_pengajuan',
+        'status'
     ];
 
     public function user()
