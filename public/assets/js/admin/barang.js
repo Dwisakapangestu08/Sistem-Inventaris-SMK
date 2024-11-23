@@ -38,7 +38,7 @@ $(document).ready(function () {
                     },
                 },
                 { data: "name_barang", name: "name_barang" },
-                { data: "name_kategori", name: "name_kategori" },
+                // { data: "name_kategori", name: "name_kategori" },
                 { data: "merk_barang", name: "merk_barang" },
                 { data: "ukuran_barang", name: "ukuran_barang" },
                 { data: "bahan_barang", name: "bahan_barang" },
@@ -55,6 +55,9 @@ $(document).ready(function () {
                 {
                     data: null,
                     render: function (data) {
+                        if (data.jumlah == null) {
+                            return "-";
+                        }
                         let jumlah = data.jumlah.split(" ");
                         return formatCurrency(data.harga * jumlah[0]);
                     },

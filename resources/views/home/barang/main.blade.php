@@ -66,7 +66,7 @@
                                     <tr>
                                         <th scope="col">#</th>
                                         <th scope="col">Nama Barang</th>
-                                        <th scope="col">Kategori</th>
+                                        {{-- <th scope="col">Kategori</th> --}}
                                         <th scope="col">Merk Barang</th>
                                         <th scope="col">Ukuran Barang</th>
                                         <th scope="col">Bahan Barang</th>

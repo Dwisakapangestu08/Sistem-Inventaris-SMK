@@ -329,7 +329,7 @@ class ApiAdminController extends Controller
             $result['data'][] = [
                 'id' => $barang->id,
                 'name_barang' => $barang->name_barang,
-                'name_kategori' => $barang->kategori->name_kategori,
+                // 'name_kategori' => $barang->kategori->name_kategori || null,
                 'merk_barang' => $barang->merk_barang,
                 'ukuran_barang' => $barang->ukuran_barang,
                 'bahan_barang' => $barang->bahan_barang,
@@ -798,6 +798,37 @@ class ApiAdminController extends Controller
                 'message' => 'Pengajuan Gagal Ditolak',
             ], 400);
         }
+
+        if ($type == 'selesai') {
+
+            $selesai = Pengajuan::where('id', $id)->update([
+                'status' => '4'
+            ]);
+
+            if ($selesai) {
+                $barang = Barang::create([
+                    'name_barang' => $request->barang,
+                ]);
+
+                if ($barang) {
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Pengajuan Selesai',
+                    ], 201);
+                }
+
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Data Barang Gagal Disimpan',
+                ], 400);
+            }
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Pengajuan Gagal Diselesaikan',
+            ], 400);
+        }
+
         // Jika tidak ada parameter type yang sesuai, maka akan dikembalikan response dengan status false dan message "Akun Gagal Diaktifkan"
         return response()->json([
             'success' => false,

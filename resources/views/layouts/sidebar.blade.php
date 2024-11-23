@@ -42,11 +42,11 @@
                              <i class="bi bi-circle"></i><span>List Barang</span>
                          </a>
                      </li>
-                     <li>
+                     {{-- <li>
                          <a href="/admin/kategori-barang" class=" {{ $title == 'Kategori Barang' ? 'active' : '' }}">
                              <i class="bi bi-circle"></i><span>Kategori Barang</span>
                          </a>
-                     </li>
+                     </li> --}}
                  </ul>
              </li>
              <!-- End Barang Nav -->

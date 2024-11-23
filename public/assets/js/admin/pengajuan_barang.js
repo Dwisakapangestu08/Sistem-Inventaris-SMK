@@ -99,6 +99,8 @@ $(document).ready(function () {
                             span = `<span class="badge bg-warning">Pending</span>`;
                         } else if (res.status == 1) {
                             span = `<span class="badge bg-success">Diterima</span>`;
+                        } else if (res.status == 4) {
+                            span = `<span class="badge bg-success">Diterima</span>`;
                         } else {
                             span = `<span class="badge bg-danger">Ditolak</span>`;
                         }
@@ -130,17 +132,22 @@ $(document).ready(function () {
                         }
                         // If the request is being processed, show a "Proses..." message
                         else if (res.status == 1) {
-                            return `<span class="badge bg-success">Proses....</span>`;
+                            return `
+                            <a href="#" id="btn-selesai" class="btn btn-success btn-sm btn-selesai" data-id="${res.id}"  
+                            data-barang="${res.barang}" style="color: #FFF;" title="Tandai Selesai" data-type="selesai"><i class="bi bi-check-circle"></i></a>
+                            `;
                         }
                         // If the request is rejected but no reason given, show a button to write the reason
                         else if (res.status == 2) {
                             return `
-                            <button id="btn-reject-message" class="btn btn-danger btn-sm btn-reject-message" data-bs-toggle="modal" data-id="${res.id}" data-bs-target="#alasanModal" style="color: #FFF;" title="Tulis Alasan Penolakan"><i class="bi bi-chat-right-text-fill"></i></button>
+                            <button id="btn-reject-message" class="btn btn-danger btn-sm btn-reject-message" data-bs-toggle="modal" data-id="${res.id}" data-barang="${res.barang}" data-bs-target="#alasanModal" style="color: #FFF;" title="Tulis Alasan Penolakan"><i class="bi bi-chat-right-text-fill"></i></button>
                             `;
                         }
                         // If the request is rejected and a reason was given, show a "Pesan Terkirim" message
                         else if (res.status == 3) {
                             return `<span class="badge bg-success">Pesan Terkirim</span>`;
+                        } else if (res.status == 4) {
+                            return `<span class="badge bg-success">Selesai</span>`;
                         }
                         // If the request is in an error state, show an error message
                         else {
@@ -296,6 +303,63 @@ $(document).ready(function () {
                 `
                 );
             },
+        });
+    });
+
+    $(document).on("click", ".btn-selesai", function (e) {
+        e.preventDefault();
+        let id = $(this).data("id");
+        let barang = $(this).data("barang");
+        let type = $(this).data("type");
+        let url = $("meta[name='link-api-status']").attr("link");
+        Swal.fire({
+            title: "Apakah anda yakin?",
+            text:
+                "Anda akan menyelesaikan pengajuan barang " +
+                barang +
+                " & Barang akan dipindahkan ke list Inventaris Barang",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Ya, selesaikan!",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    data: {
+                        id: id,
+                        barang: barang,
+                        type: type,
+                    },
+                    headers: {
+                        Authorization: "Bearer " + get_cookie("token"),
+                    },
+                    success: function (response) {
+                        console.log(response);
+                        Swal.fire({
+                            icon: "success",
+                            title: "Success",
+                            text: response.message,
+                            showConfirmButton: false,
+                            timer: 3000,
+                        }).then(() => {
+                            load_table();
+                        });
+                    },
+                    error: function (xhr) {
+                        console.log(xhr);
+                        Swal.fire({
+                            icon: "error",
+                            title: "Error",
+                            text: xhr.responseJSON.message,
+                            showConfirmButton: false,
+                            timer: 3000,
+                        });
+                    },
+                });
+            }
         });
     });
 

@@ -7,6 +7,7 @@
     <meta name="link-api-status" link="{{ url('/api/v1/admin/status-pengajuan') }}">
     <meta name="link-api-reject" link="{{ url('/api/v1/admin/reject') }}">
     <meta name="link-api-penolakan" link="{{ url('/api/v1/admin/penolakan-pengajuan') }}">
+    {{-- <meta name="link-api-selesai" link="{{ url('/api/v1/admin/selesai-pengajuan') }}"> --}}
 @endsection
 
 @section('content')
