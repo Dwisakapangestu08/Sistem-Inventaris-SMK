@@ -9,11 +9,13 @@
     <meta content="" name="description" />
     <meta content="" name="keywords" />
 
-    <!-- Favicons -->
-    <link rel="apple-touch-icon" sizes="180x180" href="{{ url('images/favicon_io/apple-touch-icon.png') }}">
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ url('images/favicon_io/favicon-32x32.png') }}">
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ url('images/favicon_io/favicon-16x16.png') }}">
-    <link rel="manifest" href="{{ url('images/favicon_io/site.webmanifest') }}">
+    {{-- Favicon --}}
+    <link rel="icon" type="image/png" href="{{ url('images/favicon/favicon-96x96.png') }}" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="{{ url('images/favicon/favicon.svg') }}" />
+    <link rel="shortcut icon" href="{{ url('images/favicon/favicon.ico') }}" />
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url('images/favicon/apple-touch-icon.png') }}" />
+    <meta name="apple-mobile-web-app-title" content="SMK Bathik" />
+    <link rel="manifest" href="{{ url('images/favicon/site.webmanifest') }}" />
 
     <!-- Google Fonts -->
     <link href="https://fonts.gstatic.com" rel="preconnect" />

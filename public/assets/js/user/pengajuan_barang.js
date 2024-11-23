@@ -103,7 +103,9 @@ $(document).ready(function () {
                         } else if (res.status == 0) {
                             anchor = `
                         <a href="#" class="btn btn-warning btn-sm btn-edit" data-bs-toggle="modal"
-                            data-bs-target="#editModal" data-id="${res.id}" style="color: #FFF;" title="Edit"><i class="bi bi-pen"></i></a>`;
+                            data-bs-target="#editModal" data-id="${res.id}" style="color: #FFF;" title="Edit"><i class="bi bi-pen"></i></a> 
+                            |
+                            <a href="#" class="btn btn-danger btn-sm btn-delete" data-id="${res.id}" data-nama="${res.barang}" style="color: #FFF;" title="Hapus"><i class="bi bi-trash"></i></a>`;
                         } else {
                             anchor = `
                             <a href="#" class="btn btn-danger btn-sm btn-penolakan" data-bs-toggle="modal"
@@ -257,7 +259,7 @@ $(document).ready(function () {
                     $(".btn-simpan").prop("disabled", false);
                     $("#edit_pengajuan").trigger("reset");
                     $(".modal").modal("hide");
-                    load_table();
+                    window.location.reload();
                 });
             },
 
@@ -278,6 +280,53 @@ $(document).ready(function () {
                     });
                 }
             },
+        });
+    });
+
+    $(document).on("click", ".btn-delete", function (e) {
+        e.preventDefault();
+        let id = $(this).data("id");
+        let name_barang = $(this).data("nama");
+        let url = $("meta[name='link-api-delete']").attr("link");
+        Swal.fire({
+            title: "Apakah anda yakin?",
+            text: "Anda akan menghapus data " + name_barang,
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Ya, hapus!",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: "GET",
+                    url: url + "/" + id,
+                    headers: {
+                        Authorization: "Bearer " + get_cookie("token"),
+                    },
+                    success: function (res) {
+                        Swal.fire({
+                            icon: "success",
+                            title: "Berhasil",
+                            text: res.message,
+                            showConfirmButton: false,
+                            timer: 3000,
+                        }).then(() => {
+                            load_table();
+                        });
+                    },
+                    error: function (xhr) {
+                        console.log(xhr);
+                        Swal.fire({
+                            icon: "error",
+                            title: "Gagal",
+                            text: xhr.responseJSON.message,
+                            showConfirmButton: false,
+                            timer: 3000,
+                        });
+                    },
+                });
+            }
         });
     });
 });

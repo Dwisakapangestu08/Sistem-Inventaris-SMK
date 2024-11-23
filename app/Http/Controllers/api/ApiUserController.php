@@ -214,52 +214,43 @@ class ApiUserController extends Controller
             ], 400);
         }
 
-        DB::beginTransaction();
+        $update = [
+            "name_barang_pengajuan" => $request->name_barang_pengajuan,
+            "jumlah_barang_pengajuan" => $request->jumlah_barang_pengajuan,
+            "harga_perkiraan" => $request->harga_perkiraan,
+            "tujuan_pengajuan" => $request->tujuan_pengajuan,
+            "kondisi" => $request->kondisi,
+            "total_harga" => $request->jumlah_barang_pengajuan * $request->harga_perkiraan
+        ];
 
-        try {
-            $update = [
-                "user_id" => auth()->user()->id,
-                "name_barang_pengajuan" => $request->name_barang_pengajuan,
-                "jumlah_barang_pengajuan" => $request->jumlah_barang_pengajuan,
-                "harga_perkiraan" => $request->harga_perkiraan,
-                "tujuan_pengajuan" => $request->tujuan_pengajuan,
-                "kondisi" => $request->kondisi,
-                "total_harga" => $request->jumlah_barang_pengajuan * $request->harga_perkiraan,
-                'status' => 0
-            ];
+        $pengajuan = Pengajuan::where('id', $id)->update($update);
 
-            $pengajuan = Pengajuan::where('id', $id)->update($update);
-
-            if (!$pengajuan) {
-                throw new \Exception('Pengajuan gagal diupdate');
-            }
-
-            $req_pengajuan = Request_Pengajuan::where("pengajuan_id", $pengajuan->id)->update([
-                'pengajuan_id' => $pengajuan->id,
-                'isAccept' => null,
-                'alasan_penolakan' => null
-            ]);
-
-            if (!$req_pengajuan) {
-                throw new \Exception('Request pengajuan gagal diupdate');
-            }
-
-            DB::commit();
-
-            if ($pengajuan) {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Pengajuan berhasil diupdate',
-                    'data_pengajuan' => $pengajuan,
-                    'data_request_pengajuan' => $req_pengajuan
-                ], 201);
-            }
-        } catch (\Throwable $th) {
-            DB::rollBack();
+        if ($pengajuan) {
             return response()->json([
-                'success' => false,
-                'message' => $th->getMessage(),
-            ], 400);
+                'success' => true,
+                'message' => 'Pengajuan berhasil diupdate'
+            ], 200);
         }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Pengajuan gagal diupdate'
+        ], 400);
+    }
+
+    public function delete_pengajuan($id)
+    {
+        $pengajuan = Pengajuan::where('id', $id)->delete();
+        if ($pengajuan) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Pengajuan berhasil dihapus'
+            ], 200);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Pengajuan gagal dihapus'
+        ], 400);
     }
 }

@@ -8,6 +8,7 @@
     <meta name="link-api-penolakan" link="{{ url('/api/v1/user/alasan-penolakan') }}">
     <meta name="link-api-edit" link={{ url('/api/v1/user/edit-pengajuan') }}>
     <meta name="link-api-update" link={{ url('/api/v1/user/update-pengajuan') }}>
+    <meta name="link-api-delete" link={{ url('/api/v1/user/hapus-pengajuan') }}>
     <meta name="loading" link="{{ url('images/load_login.gif') }}">
 @endsection
 

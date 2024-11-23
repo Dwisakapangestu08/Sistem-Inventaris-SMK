@@ -42,17 +42,14 @@ Route::middleware(IsApi::class)->group(function () {
             Route::get('/reject/{id}', [ApiAdminController::class, 'reject_get']);
             Route::post('/penolakan-pengajuan/{id}', [ApiAdminController::class, 'penolakan_pengajuan']);
         });
-    });
-});
 
-Route::middleware(IsApi::class)->group(function () {
-    Route::prefix('v1')->group(function () {
         Route::prefix('user')->group(function () {
             Route::post('/daftar-pengajuan', [ApiUserController::class, 'daftar_pengajuan']);
             Route::post('/tambah-pengajuan', [ApiUserController::class, 'tambah_pengajuan']);
             Route::get('/alasan-penolakan/{id}', [ApiUserController::class, 'alasan_penolakan']);
             Route::get('/edit-pengajuan/{id}', [ApiUserController::class, "edit_pengajuan"]);
             Route::post('/update-pengajuan/{id}', [ApiUserController::class, "update_pengajuan"]);
+            Route::get('/hapus-pengajuan/{id}', [ApiUserController::class, "delete_pengajuan"]);
         });
     });
 });

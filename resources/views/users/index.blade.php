@@ -2,10 +2,6 @@
 
 @section('title', 'Dashboard | Inventaris SMK Baitul Hikmah')
 
-@section('link-api')
-
-@endsection
-
 @section('content')
     <main id="main" class="main">
         <div class="pagetitle">
