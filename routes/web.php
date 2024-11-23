@@ -30,7 +30,6 @@ Route::middleware(IsUser::class)->group(function () {
     Route::get('/logout/{id}', [UserController::class, 'logout']);
     Route::prefix('user')->group(function () {
         Route::get('/', [UserController::class, 'index']);
-        Route::get('/daftar-pengajuan', [UserController::class, 'daftar_pengajuan']);
-        Route::get('/pengajuan-pembelian', [UserController::class, 'pengajuan_pembelian']);
+        Route::get('/pengajuan-barang', [UserController::class, 'pengajuan_barang']);
     });
 });

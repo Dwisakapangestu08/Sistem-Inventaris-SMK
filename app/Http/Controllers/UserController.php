@@ -15,20 +15,17 @@ class UserController extends Controller
         ]);
     }
 
-    public function logout($id)
+    public function logout()
     {
         Auth::logout();
         Cookie::queue(Cookie::forget('token'));
         return redirect('/');
     }
 
-    public function daftar_pengajuan()
+    public function pengajuan_barang()
     {
-        echo "DAFTAR PENGAJUAN";
-    }
-
-    public function pengajuan_pembelian()
-    {
-        echo "PENGAJUAN PEMBELIAN";
+        return view('users.pengajuan_barang.main', [
+            'title' => 'Pengajuan'
+        ]);
     }
 }

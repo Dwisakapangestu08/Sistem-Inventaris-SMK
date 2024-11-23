@@ -59,6 +59,11 @@ $(document).ready(function () {
                 { data: "jumlah", name: "jumlah" },
                 {
                     data: "harga",
+                    /**
+                     * Render harga
+                     * @param {Number} res response from server
+                     * @returns {String} formatted currency string
+                     */
                     render: (res) => {
                         return formatCurrency(res);
                     },
@@ -81,6 +86,11 @@ $(document).ready(function () {
                     /**
                      * Render status
                      * @param {Object} res response from server
+                     * @param {number} res.status - Status of the request:
+                     *  0: Pending
+                     *  1: Processing
+                     *  2: Rejected, but no reason given
+                     *  3: Rejected, with reason given
                      * @returns {String} status in string
                      */
                     render: (res) => {
@@ -102,29 +112,40 @@ $(document).ready(function () {
                      * Generates action links based on the status of a request.
                      *
                      * @param {Object} res - Response object containing request details.
-                     * @param {number} res.status - Status of the request (0 for pending, 1 for processing).
+                     * @param {number} res.status - Status of the request:
+                     *  0: Pending
+                     *  1: Processing
+                     *  2: Rejected, but no reason given
+                     *  3: Rejected, with reason given
                      * @param {string} res.id - Identifier of the request.
                      * @param {string} res.name - Name associated with the request.
                      * @returns {string} HTML string containing action buttons for the request.
                      */
                     render: (res) => {
-                        let link = "";
+                        // If the request is pending, show the approve and reject buttons
                         if (res.status == 0) {
-                            link = `<a href="#" class="btn btn-success btn-sm btn-aktif" data-id="${res.id}" data-barang="${res.barang}" data-type="approved" style="color: #FFF;" title="Terima"><i class="bi bi-check-circle"></i></a> 
+                            return `<a href="#" class="btn btn-success btn-sm btn-aktif" data-id="${res.id}" data-barang="${res.barang}" data-type="approved" style="color: #FFF;" title="Terima"><i class="bi bi-check-circle"></i></a> 
                             |
                                 <a href="#" class="btn btn-danger btn-sm btn-reject" data-id="${res.id}" data-barang="${res.barang}" data-type="rejected" style="color: #FFF;" title="Tolak"><i class="bi bi-x-circle"></i></a>`;
-                        } else if (res.status == 1) {
-                            link = `<span class="badge bg-success">Proses....</span>`;
-                        } else if (res.status == 2) {
-                            link = `
+                        }
+                        // If the request is being processed, show a "Proses..." message
+                        else if (res.status == 1) {
+                            return `<span class="badge bg-success">Proses....</span>`;
+                        }
+                        // If the request is rejected but no reason given, show a button to write the reason
+                        else if (res.status == 2) {
+                            return `
                             <button id="btn-reject-message" class="btn btn-danger btn-sm btn-reject-message" data-bs-toggle="modal" data-id="${res.id}" data-bs-target="#alasanModal" style="color: #FFF;" title="Tulis Alasan Penolakan"><i class="bi bi-chat-right-text-fill"></i></button>
                             `;
-                        } else if (res.status == 3) {
-                            link = `<span class="badge bg-success">Pesan Terkirim</span>`;
-                        } else {
-                            link = `<span class="badge bg-danger">Error !!</span>`;
                         }
-                        return link;
+                        // If the request is rejected and a reason was given, show a "Pesan Terkirim" message
+                        else if (res.status == 3) {
+                            return `<span class="badge bg-success">Pesan Terkirim</span>`;
+                        }
+                        // If the request is in an error state, show an error message
+                        else {
+                            return `<span class="badge bg-danger">Error !!</span>`;
+                        }
                     },
                 },
             ],
@@ -132,7 +153,8 @@ $(document).ready(function () {
     };
     load_table();
 
-    $(document).on("click", ".btn-aktif", function () {
+    $(document).on("click", ".btn-aktif", function (e) {
+        e.preventDefault();
         let id = $(this).data("id");
         let barang = $(this).data("barang");
         let type = $(this).data("type");
@@ -190,7 +212,8 @@ $(document).ready(function () {
         });
     });
 
-    $(document).on("click", ".btn-reject", function () {
+    $(document).on("click", ".btn-reject", function (e) {
+        e.preventDefault();
         let id = $(this).data("id");
         let barang = $(this).data("barang");
         let type = $(this).data("type");
@@ -260,7 +283,7 @@ $(document).ready(function () {
                 $("#alasanModal .modal-body").html(
                     `
                     <div class="mb-4">
-                    <input type="hidden" name="id" id="id" value="${res.data.id}">
+                    <input type="hidden" name="id" id="id" value="${res.data.pengajuan_id}">
                         <label for="alasan_penolakan" class="form-label">Alasan Penolakan</label>
                         <textarea name="alasan_penolakan" id="alasan_penolakan" class="form-control" rows="3"></textarea>
                         <div class="text-danger alasan_penolakan_err"></div>

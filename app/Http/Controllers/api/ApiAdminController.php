@@ -5,11 +5,12 @@ namespace App\Http\Controllers\api;
 use App\Models\User;
 use App\Models\Barang;
 use App\Models\Kategori;
-use App\Models\Penanggung_Jawab;
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use App\Models\Pengajuan;
+use Illuminate\Http\Request;
+use App\Models\Penanggung_Jawab;
 use App\Models\Request_Pengajuan;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 
 class ApiAdminController extends Controller
@@ -682,8 +683,8 @@ class ApiAdminController extends Controller
         // Jika ada parameter search, maka query akan di-filter berdasarkan parameter search
         if (!empty($search)) {
             $member = $member->where(function ($query) use ($search) {
-                $query->where('user_id', 'like', "%$search%");
-                $query->orWhere('kondisi', 'like', "%$search%");
+                $query->where('name_barang_pengajuan', 'like', "%$search%");
+                $query->orWhere('tujuan_pengajuan', 'like', "%$search%");
             });
         }
 
@@ -751,8 +752,9 @@ class ApiAdminController extends Controller
 
             // Jika status berhasil diupdate, maka akan dikembalikan response dengan status true dan message "Akun Diaktifkan"
             if ($approved) {
-                $req_approved = Request_Pengajuan::create([
-                    'pengajuan_id' => $id,
+                $req_approved = Request_Pengajuan::updateOrCreate([
+                    'pengajuan_id' => $id
+                ], [
                     'isAccept' => true,
                     'alasan_penolakan' => null,
                 ]);
@@ -778,8 +780,9 @@ class ApiAdminController extends Controller
             ]);
 
             if ($rejected) {
-                $req_rejected = Request_Pengajuan::create([
+                $req_rejected = Request_Pengajuan::updateOrCreate([
                     'pengajuan_id' => $id,
+                ], [
                     'isAccept' => false,
                     'alasan_penolakan' => null,
                 ]);
@@ -815,7 +818,9 @@ class ApiAdminController extends Controller
     public function reject_get($id)
     {
         // Query the database for the Request_Pengajuan record with the given ID
-        $data = Request_Pengajuan::where('id', $id)->first();
+        $data = Request_Pengajuan::where('pengajuan_id', $id)->first();
+
+        // dd($data);
 
         // Check if data is found
         if ($data) {
@@ -860,28 +865,39 @@ class ApiAdminController extends Controller
             ], 400);
         }
 
-        // Membuat penolakan pengajuan berdasarkan id pengajuan dan alasan penolakan yang diberikan
-        $penolakan = Request_Pengajuan::where('pengajuan_id', $id)->update([
-            'alasan_penolakan' => $request->alasan_penolakan
-        ]);
+        DB::beginTransaction();
 
-        // Jika penolakan berhasil, maka akan mengupdate status pengajuan menjadi 3 (ditolak)
-        if ($penolakan) {
+        try {
+            // Membuat penolakan pengajuan berdasarkan id pengajuan dan alasan penolakan yang diberikan
+            $penolakan = Request_Pengajuan::where('pengajuan_id', $id)->update([
+                'alasan_penolakan' => $request->alasan_penolakan
+            ]);
+
+            if (!$penolakan) {
+                throw new \Exception('Penolakan Pengajuan Gagal Ditulis');
+            }
+
             $pengajuan = Pengajuan::where('id', $id)->update([
                 'status' => 3
             ]);
 
-            // Jika update status pengajuan berhasil, maka akan dikembalikan response dengan status true dan message "Alasan Penolakan Berhasil Ditambahkan"
+            if (!$pengajuan) {
+                throw new \Exception('Gagal merubah status pengajuan');
+            }
+
+            DB::commit();
+
             return response()->json([
                 'success' => true,
                 'message' => 'Alasan Penolakan Berhasil Ditambahkan',
             ], 200);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            // Jika penolakan gagal, maka akan dikembalikan response dengan status false dan message "Alasan Penolakan Gagal Ditambahkan"
+            return response()->json([
+                'success' => false,
+                'message' => $th->getMessage(),
+            ], 400);
         }
-
-        // Jika penolakan gagal, maka akan dikembalikan response dengan status false dan message "Alasan Penolakan Gagal Ditambahkan"
-        return response()->json([
-            'success' => false,
-            'message' => 'Alasan Penolakan Gagal Ditambahkan',
-        ], 400);
     }
 }

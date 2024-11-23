@@ -66,37 +66,22 @@
              </li>
              <!-- End Barang Nav -->
          @endif
-         <li class="nav-item">
-             <a class="nav-link {{ $title == 'Dashboard' ? '' : 'collapsed' }}" href="/user">
-                 <i class="bi bi-grid"></i>
-                 <span>Dashboard</span>
-             </a>
-         </li>
-         <!-- End Dashboard Nav -->
-         <li class="nav-item">
-             <a class="nav-link {{ $title == 'Pengajuan' ? '' : 'collapsed' }}" data-bs-target="#forms-nav"
-                 data-bs-toggle="collapse" href="#">
-                 <i class="bi bi-clipboard-data-fill"></i>
-                 <span>Pengajuan</span>
-                 <i class="bi bi-chevron-down ms-auto"></i>
-             </a>
-             <ul id="forms-nav"
-                 class="nav-content collapse {{ $title == 'Pengajuan' || $title == 'Pengajuan Pembelian' ? 'show' : '' }}"
-                 data-bs-parent="#sidebar-nav">
-                 <li>
-                     <a href="/user/daftar-pengajuan" class=" {{ $title == 'Pengajuan' ? 'active' : '' }}">
-                         <i class="bi bi-circle"></i><span>List Pengajuan</span>
-                     </a>
-                 </li>
-                 <li>
-                     <a href="/user/pengajuan-pembelian"
-                         class=" {{ $title == 'Pengajuan Pembelian' ? 'active' : '' }}">
-                         <i class="bi bi-circle"></i><span>Pengajuan Pembelian</span>
-                     </a>
-                 </li>
-             </ul>
-         </li>
-         <!-- End Barang Nav -->
+         @if ($user->role == 2)
+             <li class="nav-item">
+                 <a class="nav-link {{ $title == 'Dashboard' ? '' : 'collapsed' }}" href="/user">
+                     <i class="bi bi-grid"></i>
+                     <span>Dashboard</span>
+                 </a>
+             </li>
+             <!-- End Dashboard Nav -->
+             <li class="nav-item">
+                 <a class="nav-link {{ $title == 'Pengajuan' ? '' : 'collapsed' }}" href="/user/pengajuan-barang">
+                     <i class="bi bi-clipboard-plus"></i>
+                     <span>Pengajuan Barang</span>
+                 </a>
+             </li>
+             <!-- End Barang Nav -->
+         @endif
 
      </ul>
 

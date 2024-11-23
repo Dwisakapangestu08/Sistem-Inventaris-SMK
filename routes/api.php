@@ -4,7 +4,7 @@ use App\Http\Controllers\api\ApiAdminController;
 use App\Http\Middleware\IsApi;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\api\ApiAuthController;
-
+use App\Http\Controllers\api\ApiUserController;
 
 Route::post('/login', [ApiAuthController::class, 'login']);
 Route::post('/register', [ApiAuthController::class, 'register']);
@@ -47,9 +47,12 @@ Route::middleware(IsApi::class)->group(function () {
 
 Route::middleware(IsApi::class)->group(function () {
     Route::prefix('v1')->group(function () {
-        Route::post('/logout', [ApiAuthController::class, 'logout']);
         Route::prefix('user')->group(function () {
-            Route::post('/daftar-pengajuan', [ApiAuthController::class, 'daftar_pengajuan']);
+            Route::post('/daftar-pengajuan', [ApiUserController::class, 'daftar_pengajuan']);
+            Route::post('/tambah-pengajuan', [ApiUserController::class, 'tambah_pengajuan']);
+            Route::get('/alasan-penolakan/{id}', [ApiUserController::class, 'alasan_penolakan']);
+            Route::get('/edit-pengajuan/{id}', [ApiUserController::class, "edit_pengajuan"]);
+            Route::post('/update-pengajuan/{id}', [ApiUserController::class, "update_pengajuan"]);
         });
     });
 });
