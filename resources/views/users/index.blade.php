@@ -60,7 +60,10 @@
                                         <div class="ps-3">
                                             <h6>
                                                 @php
-                                                    $count = \App\Models\Pengajuan::where('status', '1')->count();
+                                                    $count = \App\Models\Pengajuan::whereIn('status', [
+                                                        '1',
+                                                        '4',
+                                                    ])->count();
                                                 @endphp
                                                 {{ $count }}
                                             </h6>

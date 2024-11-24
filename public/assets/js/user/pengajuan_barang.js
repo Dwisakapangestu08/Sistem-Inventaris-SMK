@@ -88,6 +88,8 @@ $(document).ready(function () {
                             span = `<span class="badge bg-warning">Pending</span>`;
                         } else if (res.status == 1) {
                             span = `<span class="badge bg-success">Diterima</span>`;
+                        } else if (res.status == 4) {
+                            span = `<span class="badge bg-success">Diterima</span>`;
                         } else {
                             span = `<span class="badge bg-danger">Ditolak</span>`;
                         }
@@ -106,6 +108,8 @@ $(document).ready(function () {
                             data-bs-target="#editModal" data-id="${res.id}" style="color: #FFF;" title="Edit"><i class="bi bi-pen"></i></a> 
                             |
                             <a href="#" class="btn btn-danger btn-sm btn-delete" data-id="${res.id}" data-nama="${res.barang}" style="color: #FFF;" title="Hapus"><i class="bi bi-trash"></i></a>`;
+                        } else if (res.status == 4) {
+                            anchor = `<span class="badge bg-success">Selesai</span>`;
                         } else {
                             anchor = `
                             <a href="#" class="btn btn-danger btn-sm btn-penolakan" data-bs-toggle="modal"
