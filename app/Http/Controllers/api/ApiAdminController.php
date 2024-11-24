@@ -363,7 +363,6 @@ class ApiAdminController extends Controller
                 'harga' => 'nullable',
                 'jumlah' => 'nullable',
                 'keadaan_barang' => 'nullable',
-                'keterangan' => 'nullable',
             ],
             [
                 'name.required' => 'Nama barang harus diisi',
@@ -441,7 +440,6 @@ class ApiAdminController extends Controller
                 'harga' => 'nullable',
                 'jumlah' => 'nullable',
                 'keadaan_barang' => 'nullable',
-                'keterangan' => 'nullable',
             ],
             [
                 'name.required' => 'Nama harus diisi',
@@ -469,7 +467,6 @@ class ApiAdminController extends Controller
             'ukuran_barang' => $request->ukuran_barang,
             'bahan_barang' => $request->bahan_barang,
             'tahun_perolehan' => $request->tahun_perolehan,
-            'keterangan' => $request->keterangan
         ]);
 
         if ($barang) {

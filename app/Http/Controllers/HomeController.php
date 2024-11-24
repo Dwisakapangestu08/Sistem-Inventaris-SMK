@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use App\Exports\ExportBarang;
+use App\Exports\ImportBarang;
 use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\TemplateImportBarang;
+use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Cookie;
 
 class HomeController extends Controller
@@ -58,5 +61,32 @@ class HomeController extends Controller
         return view('home.pengajuan_barang.main', [
             'title' => 'Pengajuan Barang'
         ]);
+    }
+
+    public function export()
+    {
+        return Excel::download(new ExportBarang, 'barang.xlsx');
+    }
+
+    public function template()
+    {
+        return Excel::download(new TemplateImportBarang, 'template.xlsx');
+    }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:csv,xls,xlsx'
+        ]);
+
+        $file = $request->file('file');
+
+        $nama_file = rand() . $file->getClientOriginalName();
+
+        $file->move('data_barang', $nama_file);
+
+        Excel::import(new ImportBarang, public_path('/data_barang/' . $nama_file));
+
+        return redirect('/admin/barang')->with('success', 'Data Berhasil Diimport');
     }
 }

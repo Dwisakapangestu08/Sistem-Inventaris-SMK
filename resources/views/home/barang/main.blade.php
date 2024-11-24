@@ -8,6 +8,7 @@
     <meta name="link-api-edit" link="{{ url('/api/v1/admin/edit-barang') }}">
     <meta name="link-api-update" link="{{ url('/api/v1/admin/update-barang') }}">
     <meta name="link-api-hapus" link="{{ url('/api/v1/admin/hapus-barang') }}">
+    <meta name="link-api-download" link="{{ url('/api/v1/admin/download-barang') }}">
 @endsection
 
 @section('content')
@@ -30,32 +31,25 @@
             <div class="row">
                 <!-- Recent Sales -->
                 <div class="col-12">
-                    <div class="mb-3 d-flex justify-content-end">
+                    {{-- notifikasi sukses --}}
+                    @if ($sukses = Session::get('sukses'))
+                        <div class="alert alert-success alert-block">
+                            <button type="button" class="close" data-dismiss="alert">×</button>
+                            <strong>{{ $sukses }}</strong>
+                        </div>
+                    @endif
+                    <div class="mb-3 d-flex justify-content-between">
+                        <div>
+                            <a href="{{ route('export') }}" class="btn btn-primary btn-sm">Download Excel File</a>
+                            <a href="{{ route('download') }}" class="btn btn-primary btn-sm">Download Template</a>
+                            <button class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                                data-bs-target="#importModal">Import File Excel </button>
+                        </div>
                         <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                             data-bs-target="#exampleModal">
                             Tambah Barang
                         </button>
                     </div>
-                    {{-- <div class="card recent-sales overflow-auto">
-
-                        <h5 class="card-title">Recent Sales <span>| Today</span></h5>
-
-                        <table class="table table-borderless datatable" id="table_user">
-                            <thead>
-                                <tr>
-                                    <th scope="col">#</th>
-                                    <th scope="col">Nama</th>
-                                    <th scope="col">Email</th>
-                                    <th scope="col">Jabatan</th>
-                                    <th scope="col">Status</th>
-                                    <th scope="col">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        </table>
-
-                    </div> --}}
 
                     <div class="card overflow-auto recent-sales">
                         <div class="card-body">
@@ -204,6 +198,33 @@
         </div>
     </div>
 
+    <!-- Import Excel -->
+    <div class="modal fade" id="importModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <form method="post" action="{{ route('import') }}" enctype="multipart/form-data">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Import Excel</h5>
+                    </div>
+                    <div class="modal-body">
+
+                        {{ csrf_field() }}
+
+                        <label>Pilih file excel</label>
+                        <div class="form-group">
+                            <input type="file" name="file" required="required">
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Import</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
 
 @endsection
 

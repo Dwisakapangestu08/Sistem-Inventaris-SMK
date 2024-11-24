@@ -23,6 +23,9 @@ Route::middleware(IsAdmin::class)->group(function () {
         Route::get('/kategori-barang', [HomeController::class, 'kategori_barang']);
         Route::get('/penanggung-jawab', [HomeController::class, 'penanggung_jawab']);
         Route::get('/pengajuan-barang', [HomeController::class, 'pengajuan_barang']);
+        Route::get('/export', [HomeController::class, 'export'])->name('export');
+        Route::get('/template', [HomeController::class, 'template'])->name('download');
+        Route::post('/import', [HomeController::class, 'import'])->name('import');
     });
 });
 
